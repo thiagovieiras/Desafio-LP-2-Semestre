@@ -27,7 +27,6 @@ public class Validations {
     static String validarMeta(String meta) {
         if (meta.isEmpty() || meta.trim().isEmpty()) {
             System.out.println("Meta inválida, a meta deve conter ao menos um caracter.\n");
-            Main.definirCofrinho();
             return null;
         }
         return meta;

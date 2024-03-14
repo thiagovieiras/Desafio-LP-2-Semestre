@@ -25,7 +25,7 @@ public class Usuario {
     }
 
     void definirMeta(String meta) {
-        if (cofrinho.definirMeta(meta).equals(null)) System.err.println("Não é possivel definir meta para um cofre quebrado");
+        if (cofrinho.definirMeta(meta).equals(null)) System.out.println("Não é possivel definir meta para um cofre quebrado");
         else System.out.println("Meta %s definida com sucesso.".formatted(meta));
     }
 

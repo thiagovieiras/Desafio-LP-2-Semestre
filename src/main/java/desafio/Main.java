@@ -1,5 +1,6 @@
 package desafio;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 
@@ -22,6 +23,7 @@ public class Main {
         while (true) {
             if (desejar() == null) desejar();
             else if (desejar().equals(0)) break;
+            else desejar();
         }
         System.out.println("Certo! Até mais, tchau tchau!!");
 
@@ -52,7 +54,7 @@ public class Main {
     static void definirCofrinho() {
         System.out.println("Qual a meta você deseja atingir com esse cofrinho?");
         String meta = scanner.nextLine();
-        Validations.validarMeta(meta);
+        if (Validations.validarMeta(meta) == null) definirCofrinho();
         usuario.definirCofrinho(meta);
 
         System.out.println("\nMuito bem Sr.%s".formatted(usuario.nome));
@@ -70,16 +72,16 @@ public class Main {
             numerosCofre[i] = "%d".formatted(i+1);
             System.out.println("  %d°   -  %s.".formatted(i+1, usuario.listaCofrinho.get(i).meta));
         }
+        System.out.println("  0   -  Voltar.");
         return numerosCofre;
     }
 
-    static void selecionarCofrinho(String[] numerosCofre) {
-        System.out.println("\nSelecione um cofre.");
+    static Integer selecionarCofrinho(String[] numerosCofre) {
+        System.out.println("\nSelecione um cofre.\n");
         String selecao = scanner.nextLine();
         
-        if (selecao.trim().isEmpty()) {
-            System.out.println("Seleção inválida, escreva o número do cofre ou a meta desejada.");
-            realizarOpcoes("2");
+        if (selecao.equals("0")) {
+            return 0;
         } else {
             for (int i = 0; i < usuario.listaCofrinho.size(); i++) {
                 if (selecao.trim().toLowerCase().equals(usuario.listaCofrinho.get(i).meta.trim().toLowerCase()) || 
@@ -87,10 +89,33 @@ public class Main {
                 numerosCofre[i].contains(selecao+"°")) {
                     usuario.usarCofrinho(usuario.listaCofrinho.get(i).meta);
                     System.out.println("Cofre %d selecionado!".formatted(i+1));
-                    return;
+                    return 2;
                 }
             }
         }
+
+        System.out.println("Seleção inválida, escreva o número do cofre ou a meta desejada.");
+        return realizarOpcoes("2");
+    }
+
+    static void definirMetaCofrinho() {
+        System.out.println("Qual meta você quer dar ao cofre '%s'!".formatted(usuario.cofrinho.meta));
+        String meta = scanner.nextLine();
+
+        if (Validations.validarMeta(meta) == null) definirMetaCofrinho();
+        usuario.definirMeta(meta);
+
+        System.out.println("Meta definida com sucesso ao cofre '%s'!".formatted(usuario.cofrinho.meta));
+        return;
+    }
+
+    static void depositarCofrinho() {
+        System.out.println("Digíte o valor que deseja depositar: ");
+        System.out.print("R$");
+        Double valorDeposito = 0.0;
+            valorDeposito = scanner.nextDouble();
+        usuario.depositarValor(valorDeposito);
+        return;
     }
 
     static Integer realizarOpcoes(String selecionarOpcao) {
@@ -102,13 +127,15 @@ public class Main {
             return 1;
         } else if (selecionarOpcao.trim().equals("2") || selecionarOpcao.toLowerCase().trim().equals("opção2") || selecionarOpcao.toLowerCase().trim().equals("selecionarcofrinho")) {
             String[] numerosCofre = mostrarCofrinho();
-            selecionarCofrinho(numerosCofre);
-            return 2;
+            return selecionarCofrinho(numerosCofre);
         }
         else if (selecionarOpcao.trim().equals("3") || selecionarOpcao.toLowerCase().trim().equals("opção3") || selecionarOpcao.toLowerCase().trim().equals("definirmetaparaocofrinho")) {
+            Limpar.terminal();
             return 3;
         }
         else if (selecionarOpcao.trim().equals("4") || selecionarOpcao.toLowerCase().trim().equals("opção4") || selecionarOpcao.toLowerCase().trim().equals("depositarvaloraocofrinho")) {
+            Limpar.terminal();
+            depositarCofrinho();
             return 4;
         }
         else if (selecionarOpcao.trim().equals("5") || selecionarOpcao.toLowerCase().trim().equals("opção5") || selecionarOpcao.toLowerCase().trim().equals("agitarcofrinho")) {
