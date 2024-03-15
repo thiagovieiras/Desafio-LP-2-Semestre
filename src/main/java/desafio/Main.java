@@ -112,8 +112,8 @@ public class Main {
     static void depositarCofrinho() {
         System.out.println("Digíte o valor que deseja depositar: ");
         System.out.print("R$");
-        Double valorDeposito = 0.0;
-            valorDeposito = scanner.nextDouble();
+        Double valorDeposito = scanner.nextDouble();
+        scanner.nextLine(); // limpa o enter deixado pelo nextDouble();
         usuario.depositarValor(valorDeposito);
         return;
     }
