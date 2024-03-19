@@ -111,12 +111,19 @@ public class Main {
 
     static void depositarCofrinho() {
         System.out.println("Digíte o valor que deseja depositar: ");
-        System.out.print("R$");
-        Double valorDeposito = scanner.nextDouble();
-        scanner.nextLine(); // limpa o enter deixado pelo nextDouble();
-        usuario.depositarValor(valorDeposito);
+        System.out.print("R$ ");
+        try {
+            Double valorDeposito = scanner.nextDouble();
+            scanner.nextLine(); // limpa o enter deixado pelo nextDouble();
+            usuario.depositarValor(valorDeposito);
+        } catch (InputMismatchException e) {
+            System.out.println("Valor inválido, digite somente números.\n");            
+            depositarCofrinho();
+            e.printStackTrace();
+        }
         return;
     }
+    
 
     static Integer realizarOpcoes(String selecionarOpcao) {
         if (selecionarOpcao.trim().equals("0") || selecionarOpcao.toLowerCase().trim().equals("opção0") || selecionarOpcao.toLowerCase().trim().equals("sair")) {
@@ -139,9 +146,13 @@ public class Main {
             return 4;
         }
         else if (selecionarOpcao.trim().equals("5") || selecionarOpcao.toLowerCase().trim().equals("opção5") || selecionarOpcao.toLowerCase().trim().equals("agitarcofrinho")) {
+            Limpar.terminal();
+            usuario.agitar();
             return 5;
         }
         else if (selecionarOpcao.equals("6") || selecionarOpcao.toLowerCase().equals("opção6") || selecionarOpcao.toLowerCase().equals("quebrarcofrinho")) {
+            Limpar.terminal();
+            usuario.quebrar();
             return 6;
         }
         System.out.println("Valor %s incorreto".formatted(selecionarOpcao));

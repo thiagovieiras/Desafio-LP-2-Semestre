@@ -1,8 +1,8 @@
 package desafio;
 public class Mensagem {
 
-    static void quebrado() {
-        System.out.println("Não é possível realizar essa operação pois o cofre está quebrado.");
+    static void quebrado(String metaCofre) {
+        System.out.println("Não é possível realizar essa operação pois o cofre '%s' está quebrado.".formatted(metaCofre));
     }
 
     static void mostrarOpcao1() {

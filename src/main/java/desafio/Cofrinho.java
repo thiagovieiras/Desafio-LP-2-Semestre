@@ -15,9 +15,10 @@ public class Cofrinho {
     public Boolean depositar(Double valor) {
         if (!quebrado) {
             this.poupado = valor;
+            Thread investThread = new Thread(() -> {while (!quebrado) {investir();}});
+            investThread.start();
             return true;
         }
-        Mensagem.quebrado();
         return null;
     }
 
@@ -26,13 +27,11 @@ public class Cofrinho {
             this.meta = meta;
             return true;
         }
-        Mensagem.quebrado();
         return null;
     }
 
     public Double agitar() {
         if (!quebrado) return ThreadLocalRandom.current().nextDouble(0, poupado+1);
-        Mensagem.quebrado();
         return null;
     }
 
@@ -41,8 +40,17 @@ public class Cofrinho {
             this.quebrado = true;
             return poupado;
         }
-        Mensagem.quebrado();
         return null;
+    }
+
+    void investir() {
+        try {
+            poupado += poupado * 0.01; 
+            Thread.sleep(4200);
+        } catch (InterruptedException e) {
+            System.out.println("Investimento interrompido.");
+            e.printStackTrace();
+        }
     }
 
 }
