@@ -1,53 +1,59 @@
 package desafio;
 
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
+
 
 
 public class Main {
 
     static Scanner scanner = new Scanner(System.in);
 
+    static List<String> historicoComandos = new ArrayList<>();
+
     static Usuario usuario;
     public static void main(String[] args) {
 
         Limpar.terminal();
 
-        System.out.println("Olá, tudo bem Usuário?");    
+        System.out.println("Olá, tudo bem?");    
         
         usuario = new Usuario();
         nomear();
 
         Limpar.terminal();
-
+         
         while (true) {
-            if (desejar() == null) desejar();
-            else if (desejar().equals(0)) break;
-            else desejar();
+            String desejado = desejar();
+            historicoComandos.add(desejado);
+            if (desejado == "0") break;
         }
         System.out.println("Certo! Até mais, tchau tchau!!");
-
-        
 
     }
 
     static void nomear() {
-        System.out.println("Qual o seu nome: ");
-        String nomeUsuario = scanner.nextLine();
-        Validations.validarNome(nomeUsuario);
-        usuario.nome = nomeUsuario;
+        while (true) {
+            System.out.println("Qual nome você deseja cadastrar?");
+            String nomeUsuario = scanner.nextLine();
+            String nomeValidado = Validations.validarNome(nomeUsuario);
+            if (nomeValidado != null) {
+                usuario.nome = nomeValidado;
+                System.out.print("\n");
+                Mensagem.elogiosAleatorios();
+                break;
+            }
+        }
         return;
     }
 
-    static Integer desejar() {
-        System.out.println("""
-            Certo!
-            O que você deseja agora, Sr.%s?""".formatted(usuario.nome));
+    static String desejar() {
+        System.out.println("O que você deseja agora, Sr.%s?".formatted(usuario.nome));
         Mensagem.mostrarOpcoes();
         String selecionarOpcao = scanner.nextLine();
-        Limpar.terminal();
-        Integer valor = realizarOpcoes(selecionarOpcao);
-        return valor;
+        return realizarOpcoes(selecionarOpcao);
     }
 
 
@@ -56,15 +62,11 @@ public class Main {
         String meta = scanner.nextLine();
         if (Validations.validarMeta(meta) == null) definirCofrinho();
         usuario.definirCofrinho(meta);
-
-        System.out.println("\nMuito bem Sr.%s".formatted(usuario.nome));
-        System.out.println("Cofre criado com sucesso.");
-        System.out.println("O que você deseja fazer agora?");
         return;
     }
 
     static String[] mostrarCofrinho() {
-        Validations.verificarListaCofre(usuario.listaCofrinho);
+        if (Validations.verificarListaCofre(usuario.listaCofrinho) == null) return new String[]{"2"};
 
         String[] numerosCofre = new String[usuario.listaCofrinho.size()];
         System.out.println("Cofre --- Metas");
@@ -72,30 +74,28 @@ public class Main {
             numerosCofre[i] = "%d".formatted(i+1);
             System.out.println("  %d°   -  %s.".formatted(i+1, usuario.listaCofrinho.get(i).meta));
         }
-        System.out.println("  0   -  Voltar.");
+        System.out.println("  0    -  Voltar.");
         return numerosCofre;
     }
 
-    static Integer selecionarCofrinho(String[] numerosCofre) {
-        System.out.println("\nSelecione um cofre.\n");
+    static String selecionarCofrinho(String[] numerosCofre) {
+        System.out.println("\nSelecione um cofre.");
         String selecao = scanner.nextLine();
         
-        if (selecao.equals("0")) {
-            return 0;
-        } else {
+        if (selecao.equals("0")) return "2";
+        else {
             for (int i = 0; i < usuario.listaCofrinho.size(); i++) {
                 if (selecao.trim().toLowerCase().equals(usuario.listaCofrinho.get(i).meta.trim().toLowerCase()) || 
                 numerosCofre[i].contains(selecao) || 
                 numerosCofre[i].contains(selecao+"°")) {
                     usuario.usarCofrinho(usuario.listaCofrinho.get(i).meta);
-                    System.out.println("Cofre %d selecionado!".formatted(i+1));
-                    return 2;
+                    return "2";
                 }
             }
         }
 
         System.out.println("Seleção inválida, escreva o número do cofre ou a meta desejada.");
-        return realizarOpcoes("2");
+        return selecionarCofrinho(numerosCofre);
     }
 
     static void definirMetaCofrinho() {
@@ -105,59 +105,117 @@ public class Main {
         if (Validations.validarMeta(meta) == null) definirMetaCofrinho();
         usuario.definirMeta(meta);
 
-        System.out.println("Meta definida com sucesso ao cofre '%s'!".formatted(usuario.cofrinho.meta));
         return;
     }
 
     static void depositarCofrinho() {
-        System.out.println("Digíte o valor que deseja depositar: ");
-        System.out.print("R$ ");
-        try {
-            Double valorDeposito = scanner.nextDouble();
-            scanner.nextLine(); // limpa o enter deixado pelo nextDouble();
-            usuario.depositarValor(valorDeposito);
-        } catch (InputMismatchException e) {
-            System.out.println("Valor inválido, digite somente números.\n");            
-            depositarCofrinho();
-            e.printStackTrace();
+        while (true) {
+            System.out.println("-- Valor do cofre atual :: R$ %.2f --\n".formatted(usuario.cofrinho.poupado == null ? 0.0 : usuario.cofrinho.poupado));
+            System.out.println("Digíte o valor que deseja depositar: ");
+            System.out.print("R$ ");
+            try {
+                Double valorDeposito = scanner.nextDouble();
+                scanner.nextLine(); // limpa o enter deixado pelo nextDouble();
+                usuario.depositarValor(valorDeposito);
+                break;
+            } catch (InputMismatchException e) {
+                scanner.nextLine();
+                System.out.println("Valor inválido, digite somente números.\n");            
+                e.printStackTrace();
+                Limpar.terminal();
+            }
         }
         return;
     }
-    
 
-    static Integer realizarOpcoes(String selecionarOpcao) {
-        if (selecionarOpcao.trim().equals("0") || selecionarOpcao.toLowerCase().trim().equals("opção0") || selecionarOpcao.toLowerCase().trim().equals("sair")) {
-            return 0;
-        } else if (selecionarOpcao.trim().equals("1") || selecionarOpcao.toLowerCase().trim().equals("opção1") || selecionarOpcao.toLowerCase().trim().equals("definircofrinho")) {
-            System.out.println("\nBem Sr.%s".formatted(usuario.nome));
+    static void saldoAtual() {
+        Limpar.terminal();
+        usuario.saldoAtualCofre();
+        System.out.println("[0] Voltar");
+        String resposta = scanner.nextLine();
+        if (resposta.equals("0")) return;
+    }
+
+
+    static String realizarOpcoes(String selecionarOpcao) {
+        if (selecionarOpcao.trim().equals("0") || selecionarOpcao.trim().equals("[0]") || selecionarOpcao.toLowerCase().trim().equals("opção0") || selecionarOpcao.toLowerCase().trim().equals("sair")) {
+            return "0";
+        } else if (selecionarOpcao.trim().equals("1") || selecionarOpcao.trim().equals("[0]") || selecionarOpcao.toLowerCase().trim().equals("opção1") || selecionarOpcao.toLowerCase().trim().equals("definircofre")) {
+            Limpar.terminal();
+            Mensagem.elogiosAleatorios();
             definirCofrinho();
-            return 1;
-        } else if (selecionarOpcao.trim().equals("2") || selecionarOpcao.toLowerCase().trim().equals("opção2") || selecionarOpcao.toLowerCase().trim().equals("selecionarcofrinho")) {
+            return "1";
+        } else if (selecionarOpcao.trim().equals("2") || selecionarOpcao.trim().equals("[0]") || selecionarOpcao.toLowerCase().trim().equals("opção2") || selecionarOpcao.toLowerCase().trim().equals("selecionarcofre")) {
+            Limpar.terminal();
             String[] numerosCofre = mostrarCofrinho();
+            if (numerosCofre[0].equals("2")) return "2";
             return selecionarCofrinho(numerosCofre);
         }
-        else if (selecionarOpcao.trim().equals("3") || selecionarOpcao.toLowerCase().trim().equals("opção3") || selecionarOpcao.toLowerCase().trim().equals("definirmetaparaocofrinho")) {
+        else if (selecionarOpcao.trim().equals("3") || selecionarOpcao.trim().equals("[0]") || selecionarOpcao.toLowerCase().trim().equals("opção3") || selecionarOpcao.toLowerCase().trim().equals("definirmetaparaocofre")) {
             Limpar.terminal();
-            return 3;
+            Mensagem.elogiosAleatorios();
+            if (Validations.validarCofre(usuario.cofrinho)) definirMetaCofrinho();
+            return "3";
         }
-        else if (selecionarOpcao.trim().equals("4") || selecionarOpcao.toLowerCase().trim().equals("opção4") || selecionarOpcao.toLowerCase().trim().equals("depositarvaloraocofrinho")) {
+        else if (selecionarOpcao.trim().equals("4") || selecionarOpcao.trim().equals("[0]") || selecionarOpcao.toLowerCase().trim().equals("opção4") || selecionarOpcao.toLowerCase().trim().equals("depositarvaloraocofre")) {
             Limpar.terminal();
-            depositarCofrinho();
-            return 4;
+            Mensagem.elogiosAleatorios();
+            if (Validations.validarCofre(usuario.cofrinho)) depositarCofrinho();
+            return "4";
         }
-        else if (selecionarOpcao.trim().equals("5") || selecionarOpcao.toLowerCase().trim().equals("opção5") || selecionarOpcao.toLowerCase().trim().equals("agitarcofrinho")) {
+        else if (selecionarOpcao.trim().equals("5") || selecionarOpcao.trim().equals("[0]") || selecionarOpcao.toLowerCase().trim().equals("opção5") || selecionarOpcao.toLowerCase().trim().equals("agitarcofre")) {
             Limpar.terminal();
-            usuario.agitar();
-            return 5;
+            Mensagem.elogiosAleatorios();
+            if (Validations.validarCofre(usuario.cofrinho)) usuario.agitar();            ;
+            return "5";
         }
-        else if (selecionarOpcao.equals("6") || selecionarOpcao.toLowerCase().equals("opção6") || selecionarOpcao.toLowerCase().equals("quebrarcofrinho")) {
+        else if (selecionarOpcao.trim().equals("6") || selecionarOpcao.toLowerCase().equals("opção6") || selecionarOpcao.toLowerCase().equals("quebrarcofre")) {
             Limpar.terminal();
-            usuario.quebrar();
-            return 6;
+            Mensagem.elogiosAleatorios();
+            if (Validations.validarCofre(usuario.cofrinho)) usuario.quebrar();
+            return "6";
         }
-        System.out.println("Valor %s incorreto".formatted(selecionarOpcao));
-        System.out.println("Escolha uma opção válida.");
+        else if (selecionarOpcao.trim().equals("7") || selecionarOpcao.toLowerCase().equals("opção7") || selecionarOpcao.toLowerCase().equals("quebrartodoscofres")) {
+            Limpar.terminal();
+            Mensagem.elogiosAleatorios();
+            if (Validations.validarCofre(usuario.cofrinho)) usuario.quebrarTodos();
+            return "7";
+        }
+        else if (selecionarOpcao.trim().equals("8") || selecionarOpcao.toLowerCase().equals("opção8") || selecionarOpcao.toLowerCase().equals("versaldodocofre")) {
+            Limpar.terminal();
+            Mensagem.elogiosAleatorios();
+            if (Validations.validarCofre(usuario.cofrinho)) saldoAtual();
+            return "8";
+        }
+        else if (selecionarOpcao.trim().equals("9") || selecionarOpcao.toLowerCase().equals("opção9") || selecionarOpcao.toLowerCase().equals("versaldototal")) {
+            Limpar.terminal();
+            Mensagem.elogiosAleatorios();
+            if (Validations.validarCofre(usuario.cofrinho)) usuario.saldoTotal();
+            return "9";
+        }
+        else if (selecionarOpcao.trim().toLowerCase().equals("r") || selecionarOpcao.toLowerCase().equals("opçãor") || selecionarOpcao.toLowerCase().equals("renomear")) {
+            Limpar.terminal();
+            Mensagem.elogiosAleatorios();
+            nomear();
+            return "R";
+        }
+        else if (selecionarOpcao.trim().toLowerCase().equals("h") || selecionarOpcao.toLowerCase().equals("opçãoh") || selecionarOpcao.toLowerCase().equals("histórico") || selecionarOpcao.toLowerCase().equals("historico")) {
+            Limpar.terminal();
+            Mensagem.elogiosAleatorios();
+            mostrarHistorico();
+            return "H";
+        }
+        Limpar.terminal();
+        System.out.println("Valor '%s' incorreto".formatted(selecionarOpcao));
+        System.out.println("Escolha uma opção válida.\n");
         return null; 
+    }
+
+    static void mostrarHistorico() {
+        for (int i = 0; i < historicoComandos.size(); i++) {
+            System.out.println("%d° Comando = %s". formatted(i+1, historicoComandos));
+        }
+        System.out.print("\n");
     }
 
 }

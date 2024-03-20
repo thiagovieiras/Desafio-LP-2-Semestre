@@ -5,13 +5,12 @@ import java.util.List;
 public class Validations {
     
     static String validarNome(String nome) {
-        if (nome.isEmpty() || nome.trim().isEmpty() || nome.length() < 3) {
-            System.out.println("Nome inválido, o nome deve ter pelo menos 3 caracteres, excluindo espaços e símbolos!");
-            Main.nomear();
+        if (nome.isEmpty() || nome.trim().isEmpty() || nome.length() < 2) {
+            System.out.println("\nNome inválido, o nome deve ter pelo menos 2 caracteres, excluindo espaços e símbolos!\n");
             return null;
         }
         StringBuilder novoNome = refatorarNome(nome.split(" "));
-        return nome = novoNome.toString();
+        return novoNome.toString().toUpperCase();
     }
 
     static StringBuilder refatorarNome(String[] nomes) {
@@ -32,10 +31,18 @@ public class Validations {
         return meta;
     }
 
+    static Boolean validarCofre(Cofrinho cofreUsuario) {
+        if (cofreUsuario == null) {
+            Limpar.terminal();
+            System.out.println("Não é possivel realizar essa tarefa pois não existe cofre definido!\n");
+            return false;
+        }
+        return true;
+    }
+
     static List<Cofrinho> verificarListaCofre(List<Cofrinho> listaCofre) {
         if (listaCofre.size() < 1) {
-            System.out.println("Nenhum cofre definido ainda! Por favor defina um cofre antes.");
-            Mensagem.mostrarOpcao1();
+            System.out.println("Nenhum cofre definido ainda! Por favor defina um cofre antes.\n");
             return null;
         }
         return listaCofre;
