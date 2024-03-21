@@ -10,6 +10,7 @@ public class Cofrinho {
 
     public Cofrinho(String meta) {
         this.meta = meta;
+        this.poupado = 0.0;
     }
 
     public Boolean depositar(Double valor) {
@@ -19,7 +20,15 @@ public class Cofrinho {
             investThread.start();
             return true;
         }
-        return null;
+        return false;
+    }
+
+    Boolean sacar(Double valor) {
+        if (!quebrado) {
+            this.poupado -= valor;
+            return true;
+        }
+        return false;
     }
 
     public Boolean definirMeta(String meta) {
@@ -27,11 +36,12 @@ public class Cofrinho {
             this.meta = meta;
             return true;
         }
-        return null;
+        return false;
     }
 
     public Double agitar() {
-        if (!quebrado) return ThreadLocalRandom.current().nextDouble(0, poupado+1);
+        if (poupado == 0.0) return 0.0;
+        else if (!quebrado) return ThreadLocalRandom.current().nextDouble(0, poupado+1);
         return null;
     }
 

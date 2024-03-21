@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Validations {
     
-    static String validarNome(String nome) {
+    public String validarNome(String nome) {
         if (nome.isEmpty() || nome.trim().isEmpty() || nome.length() < 2) {
             System.out.println("\nNome inválido, o nome deve ter pelo menos 2 caracteres, excluindo espaços e símbolos!\n");
             return null;
@@ -22,19 +22,28 @@ public class Validations {
         }
         return novoNome;
     }
-
-    static String validarMeta(String meta) {
+    
+    public Boolean validarMeta(String meta) {
         if (meta.isEmpty() || meta.trim().isEmpty()) {
             System.out.println("Meta inválida, a meta deve conter ao menos um caracter.\n");
-            return null;
+            return false;
         }
-        return meta;
+        return true;
     }
 
     static Boolean validarCofre(Cofrinho cofreUsuario) {
         if (cofreUsuario == null) {
             Limpar.terminal();
             System.out.println("Não é possivel realizar essa tarefa pois não existe cofre definido!\n");
+            return false;
+        }
+        return true;
+    }
+
+    static Boolean validarPoupanca(Cofrinho cofre) {
+        if (cofre.poupado == null) {
+            Limpar.terminal();
+            System.out.println("Não é possivel realizar essa tarefa pois não existe valor poupado!\n");
             return false;
         }
         return true;
@@ -47,5 +56,4 @@ public class Validations {
         }
         return listaCofre;
     }
-
 }

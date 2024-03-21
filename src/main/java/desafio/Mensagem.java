@@ -20,6 +20,7 @@ public class Mensagem {
             [7] - Quebrar todos cofres.
             [8] - Ver saldo do cofre.
             [9] - Ver saldo total.
+            [S] - Sacar.
             [R] - Renomear.
             [H] - Histórico.""");
     }
